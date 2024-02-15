@@ -2,7 +2,8 @@ import { useFormik } from "formik";
 import { useState } from "react";
 import * as yup from "yup";
 const Forms = () => {
-    const [image, setImage] = useState(null)
+    // const [image, setImage] = useState(null);
+    const [inputs, setInputs] = useState([]);
     const password_pattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
     const phone_pattern = /^(\+\d{1,3}[- ]?)?\d{10}$/;
     const pincode_pattern = /^\d{6}$/;
@@ -20,7 +21,7 @@ const Forms = () => {
             state: "",
             pincode: "",
             hobbies: "",
-            photo: null,
+            // photo: null,
         },
         validationSchema: yup.object({
             firstname: yup.string().required("First name is required").min(3, "At least 3 characters").max(20, "At max 20 character allowed"),
@@ -31,16 +32,25 @@ const Forms = () => {
             cnfpassword: yup.string().required("Confirm Password is required").oneOf([yup.ref('password'), null], 'Passwords must match').matches(password_pattern, "Valid the password"),
             contactnumber: yup.string().required("Contact Number is required").matches(phone_pattern, "Phone number format is invalid."),
             pincode: yup.string().max(6, "Not more than 6 allowed").matches(pincode_pattern, "Matche the pincode pattern correctly"),
-            photo: yup.mixed().required("Upload image"),
+            // photo: yup.mixed().required("Upload image"),
         }),
         onSubmit: (values) => {
-            alert(JSON.stringify(values, null, 2));
+            setInputs((prevvalues) => ([...prevvalues, values]));
+            console.log(inputs)
         }
     });
-    const changeimage = (e) => {
-        const file = URL.createObjectURL(e.target.files[0]);
-        setImage(file);
-    }
+    // console.log("console", formik.values)
+    // const changeimage = (e) => {
+    //     const file = URL.createObjectURL(e.target.files[0]);
+    //     setImage(file);
+    // }
+
+
+    // const handleeSubmit = () => {
+    //     setInputs((prevvalues) => ({ ...prevvalues, [formik.initialvalues]: formik.values }));
+    //     console.log("inputs")
+    //     console.log(inputs);
+    // }
     return (
         <>
             <h1 style={{ color: "red" }}>Student Registration Form</h1>
@@ -129,7 +139,7 @@ const Forms = () => {
                     onBlur={formik.handleBlur} />
                 {formik.touched.pincode && formik.errors.pincode ? (<div>{formik.errors.pincode}</div>) : null}<br /><br />
                 {/* Photo Upload */}
-                <label htmlFor="photo">Upload Photo : </label>
+                {/* <label htmlFor="photo">Upload Photo : </label>
                 <input
                     type="file"
                     name="photo"
@@ -143,9 +153,22 @@ const Forms = () => {
                     src={image}
                     style={{ width: "80px", height: "60px" }}
                     alt="Preview your file"
-                />
+                /> */}
                 <button type="submit">Submit</button>
             </form>
+            {inputs.map((item) => {
+                console.log("items", item)
+                return (
+                    <ul>
+                        <li>first name : {item.firstname}</li>
+                        <li>last name : {item.lastname}</li>
+                        <li>DOB : {item.dob}</li>
+                        <li>PAssword : {item.password}</li>
+                        <li>Pincode : {item.pincode}</li>
+
+                    </ul>
+                )
+            })}
         </>
     )
 }
